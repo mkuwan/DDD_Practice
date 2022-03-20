@@ -1,0 +1,26 @@
+<p>upload works!</p>
+<a class="h3" href="https://docs.microsoft.com/ja-jp/aspnet/core/blazor/file-uploads?view=aspnetcore-6.0&pivots=server">
+  ASP.NET Core Blazor file uploads
+</a>
+
+<div>
+  <label>住所CSVファイルを選択してください </label>
+<!--    <div *ngIf="maxAllowedFiles > 1">-->
+<!--      <input type="file" #uploadFile (change)="OnInputFileChangeAsync(uploadFile.files)" [multiple]="true">-->
+<!--    </div>-->
+    <div *ngIf="maxAllowedFiles <= 1">
+      <input type="file" #uploadFile (change)="OnInputFileChangeAsync(uploadFile.files)" [multiple]="false">
+    </div>
+</div>
+<br>
+<div>
+<!--  <div *ngFor="let fileName of fileNames">-->
+<!--    {{fileName}}-->
+<!--  </div>-->
+<!--  <div>{{fileNames.length}}　件</div>-->
+  {{fileName}}
+</div>
+<br>
+<div>
+  <button (click)="OnUploadFilesAsync()">アップロード</button>
+</div>

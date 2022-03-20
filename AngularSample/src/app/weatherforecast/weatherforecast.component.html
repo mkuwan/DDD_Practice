@@ -1,0 +1,76 @@
+<h1 id="tableLabel">Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p *ngIf="!forecasts"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
+
+<h3>{{name}}</h3>
+<div [innerHTML]="inner"></div>
+<table *ngIf="forecasts">
+  <thead>
+  <tr>
+    <th>Date</th>
+    <th>Temp. (C)</th>
+    <th>Temp. (F)</th>
+    <th>Summary</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let forecast of forecasts">
+    <td>{{ forecast.date }}</td>
+    <td>{{ forecast.temperatureC }}</td>
+    <td>{{ forecast.temperatureF }}</td>
+    <td>{{ forecast.summary }}</td>
+  </tr>
+  </tbody>
+</table>
+
+<button (click)="alertMethod()">押すなよ(笑)</button>
+<p>押した回数 {{count}}</p>
+
+<input type="text" (input)="setInputValue($event)" />
+<p>{{inputValueLength}}文字</p>
+
+<input #inputText type="text" (change)="{}" />
+<button (click)="showInputLength(inputText.value)">{{inputValueLength2}}文字</button>
+<p>入力した文字:{{inputText.value}}</p>
+
+<label for="ckbox">表示・非表示</label>
+<input id="ckbox" type="checkbox" (change)="toggle($event)" />
+<div *ngIf="isChecked then trueContent else elseContent"></div>
+<ng-template #trueContent>
+  <p>
+    ComboBox is Checked
+  </p>
+</ng-template>
+<ng-template #elseContent>
+  <p>
+    ComboBox is not Checked
+  </p>
+</ng-template>
+<div [style.display]="isChecked ? 'inline' : 'none'">
+  <p>
+    いっしょに楽しい時間すごしましょう！
+    <br />
+    楽しみ～
+  </p>
+</div>
+
+<form #sampleForm="ngForm" (ngSubmit)="submit()">
+  <label for="yourName">名前は</label>
+  <input id="yourName" type="text" (change)="inputYourName($event)">
+  <button type="submit">送信</button>
+</form>
+
+<div>
+  <label>
+    住所CSVファイルを選択してください
+    <div *ngIf="maxAllowedFiles > 1 then multipleTemplate else onlyTemplate"></div>
+    <ng-template #multipleTemplate>
+      <input type="file" #csvFile multiple (change)="UploadFileAsync(csvFile.files)">
+    </ng-template>
+    <ng-template #onlyTemplate >
+      <input type="file" #csvFile (change)="UploadFileAsync(csvFile.files)">
+    </ng-template>
+  </label>
+</div>

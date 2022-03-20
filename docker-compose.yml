@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mssqldb:
+    image: mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04
+    container_name: mssql-asp
+    hostname: mssql-asp
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=aspMVC98
+      - MSSQL_PID=Developer
+      - MSSQL_AGENT_ENABLED=true
+      - MSSQL_LCID=1041
+      - MSSQL_COLLATION=Japanese_CI_AS
+    ports:
+      - '1433:1433'
+    volumes:
+      - mssqldb:/var/opt/mssql
+    networks:
+      - mssqldbnet
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "8672:15672"
+      - "5672:5672"
+
+volumes:
+  mssqldb:
+
+networks:
+  mssqldbnet:
+    driver: bridge
