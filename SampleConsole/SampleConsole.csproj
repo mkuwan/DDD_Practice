@@ -96,7 +96,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\" />
+    <Folder Include="Application\Behaviors\" />
+    <Folder Include="Application\Controllers\" />
+    <Folder Include="Application\Commands\" />
   </ItemGroup>
 
   <ItemGroup>

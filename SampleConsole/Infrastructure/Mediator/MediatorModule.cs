@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using MediatR;
+using SampleConsole.Application.Queries;
 
 namespace SampleConsole.Infrastructure.Mediator
 {
@@ -17,6 +18,8 @@ namespace SampleConsole.Infrastructure.Mediator
 
             builder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
+
+            builder.RegisterType(typeof(GetScheduleQuery));
 
             //// Register all the Command classes (they implement IRequestHandler) in assembly holding the Commands
             //builder.RegisterAssemblyTypes(typeof(CreateOrderCommand).GetTypeInfo().Assembly)
@@ -32,16 +35,15 @@ namespace SampleConsole.Infrastructure.Mediator
             //    .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
             //    .AsImplementedInterfaces();
 
-            builder.Register<ServiceFactory>(context =>
-            {
-                var componentContext = context.Resolve<IComponentContext>();
-                return type =>
-                {
-                    object? obj;
-                    return componentContext.TryResolve(type, out obj) ? obj : null;
-                };
-            });
-
+            //builder.Register<ServiceFactory>(context =>
+            //{
+            //    var componentContext = context.Resolve<IComponentContext>();
+            //    return type =>
+            //    {
+            //        object? obj;
+            //        return componentContext.TryResolve(type, out obj) ? obj : null;
+            //    };
+            //});
 
         }
     }

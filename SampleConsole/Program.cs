@@ -4,6 +4,7 @@ using System.Net;
 using Autofac.Extensions.DependencyInjection;
 using Azure.Core;
 using Azure.Identity;
+using Castle.DynamicProxy;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,31 +13,39 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SampleConsole.BackgroundTasks;
+using SampleConsole.Domain.Repositories;
 using SampleConsole.Infrastructure;
 using SampleConsole.Infrastructure.Mediator;
+using SampleConsole.Infrastructure.Repositories;
 using Serilog;
 
 
 var configuration = GetConfiguration();
+
 Log.Logger = CreateSerilogLogger(configuration);
 
 
-
 var builder = WebApplication.CreateBuilder(args);
+// Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
-{
-    containerBuilder.RegisterModule(new MediatorModule());
-});
+
+// MediatR
+//builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+//{
+//    containerBuilder.RegisterModule(new MediatorModule());
+//});
+builder.Services.AddMediatR(typeof(Program));
 
 // dbContext
-var postalConnectionString = builder.Configuration.GetConnectionString("OrderConnection");
-builder.Services.AddDbContextFactory<OrderDbContext>(options =>
-    options.UseSqlServer(postalConnectionString));
+var orderConnectionString = builder.Configuration.GetConnectionString("SampleConnection");
+builder.Services.AddDbContextFactory<SampleDbContext>(options =>
+    options.UseSqlServer(orderConnectionString));
+//Seed<SampleDbContext>(builder.Services.BuildServiceProvider());
 
 //builder.Services.Configure<FileUploadSettings>(builder.Configuration.GetSection("FileUploadSettings"));
 
 //// DI
+builder.Services.AddTransient<IScheduleRepository, ScheduleRepository>();
 //builder.Services.AddTransient<ISettingService, SettingService>();
 //builder.Services.AddTransient<IFileUploadService, FileUploadService>();
 //builder.Services.AddTransient<IStoreService, StoreService>();
@@ -52,6 +61,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+//Console.WriteLine(app.Environment.EnvironmentName.ToString());
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+//app.UseStaticFiles();
+//app.MapGet("/", () => "Hello Sample Console");
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -61,6 +79,38 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// app.Run() ではなくHostを使用するパターン
+// https://andrewlock.net/exploring-dotnet-6-part-2-comparing-webapplicationbuilder-to-the-generic-host/
+//var hostBuilder = Host.CreateDefaultBuilder(args)
+//    .ConfigureServices(services =>
+//    {
+//        services.AddAutofac();
+//    })
+//    .ConfigureWebHostDefaults(webBuilder =>
+//    {
+//        webBuilder.Configure((ctx, app) =>
+//        {
+//            if (ctx.HostingEnvironment.IsDevelopment())
+//            {
+//                app.UseDeveloperExceptionPage();
+//            }
+
+//            app.UseStaticFiles();
+//            app.UseRouting();
+//            app.UseEndpoints(endPoints =>
+//            {
+//                endPoints.MapGet("/", () => "Hello");
+//                //endPoints.MapRazorPages();
+//            });
+//        });
+//    })
+//    .ConfigureHostOptions(options =>
+//    {
+
+//    });
+//hostBuilder.Build().Run();
+
 
 IConfiguration GetConfiguration()
 {
@@ -102,6 +152,42 @@ Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
         .CreateLogger();
 }
 
+IHost BuildHost(IConfiguration configuration, string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureServices(services =>
+        {
+
+        })
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.ConfigureKestrel(options =>
+            {
+                var ports = GetDefinedPorts(configuration);
+                options.Listen(IPAddress.Any, ports.httpPort, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                });
+                options.Listen(IPAddress.Any, ports.grpcPort, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http2;
+                });
+            });
+
+            webBuilder.Configure((ctx, app) =>
+            {
+                app.UseStaticFiles();
+                app.UseRouting();
+                app.UseEndpoints(endPoints =>
+                {
+                    endPoints.MapGet("/", () => "Hello by Host");
+                });
+
+            });
+        })
+        .ConfigureAppConfiguration(x => x.AddConfiguration(configuration))
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .Build();
+
 IWebHost BuildWebHost(IConfiguration configuration, string[] args) =>
     WebHost.CreateDefaultBuilder(args)
         .CaptureStartupErrors(false)
@@ -130,6 +216,15 @@ IWebHost BuildWebHost(IConfiguration configuration, string[] args) =>
     var grpcPort = config.GetValue("GRPC_PORT", 5001);
     var port = config.GetValue("PORT", 80);
     return (port, grpcPort);
+}
+
+static void Seed<TContext>(IServiceProvider services) where TContext: DbContext
+{
+    var context = services.GetService<TContext>();
+    //context?.Database.Migrate();
+
+
+    //var s = (context as SampleDbContext).Schedules.ToList();
 }
 
 
