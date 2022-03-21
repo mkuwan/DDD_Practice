@@ -10,8 +10,10 @@ namespace SampleConsole.Domain.Repositories
 {
     public interface IScheduleRepository : IRepository<Schedule>
     {
-        Task<List<Schedule>> GetAllAsync();
+        Task<List<Schedule?>> GetAllAsync();
 
-        Task<Schedule> GetByIdAsync(int id);
+        Task<Schedule?> GetByIdAsync(int id);
+
+        Task<Schedule> CreateScheduleAsync(Schedule schedule);
     }
 }

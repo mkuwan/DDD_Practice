@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SampleConsole.Application.Commands;
 using SampleConsole.Application.Queries;
+using SampleConsole.Domain.SampleModel;
 using SampleConsole.Infrastructure;
 
 namespace SampleConsole.Application.Controllers;
@@ -9,13 +11,11 @@ namespace SampleConsole.Application.Controllers;
 public class ScheduleController : ControllerBase
 {
     private readonly ILogger<ScheduleController> _logger;
-    private readonly SampleDbContext _context;
     private readonly IMediator _mediator;
 
-    public ScheduleController(ILogger<ScheduleController> logger, SampleDbContext context, IMediator mediator)
+    public ScheduleController(ILogger<ScheduleController> logger, IMediator mediator)
     {
         _logger = logger;
-        _context = context;
         _mediator = mediator;
     }
 
@@ -39,7 +39,17 @@ public class ScheduleController : ControllerBase
         var query = new GetScheduleByIdQuery(scheduleId);
         var result = await _mediator.Send(query);
 
-        return Ok(result);
+        //return result !=null ? Ok(result) : NotFound(); // こちらだとNotFound(404errorがでる)
+        return Ok(result);  // こちらだとない場合は 204 No Contentとなる
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateSchedule([FromBody] CreateScheduleCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        //return Ok(result);
+        return CreatedAtAction(nameof(GetSchedule), new { scheduleId = result.Id }, result);
     }
 
 }

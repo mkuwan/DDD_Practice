@@ -40,7 +40,7 @@ builder.Services.AddMediatR(typeof(Program));
 var orderConnectionString = builder.Configuration.GetConnectionString("SampleConnection");
 builder.Services.AddDbContextFactory<SampleDbContext>(options =>
     options.UseSqlServer(orderConnectionString));
-//Seed<SampleDbContext>(builder.Services.BuildServiceProvider());
+
 
 //builder.Services.Configure<FileUploadSettings>(builder.Configuration.GetSection("FileUploadSettings"));
 
@@ -55,9 +55,13 @@ builder.Services.AddHostedService<TickerBackgroundService>();
 
 
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 
 var app = builder.Build();
 
@@ -218,14 +222,6 @@ IWebHost BuildWebHost(IConfiguration configuration, string[] args) =>
     return (port, grpcPort);
 }
 
-static void Seed<TContext>(IServiceProvider services) where TContext: DbContext
-{
-    var context = services.GetService<TContext>();
-    //context?.Database.Migrate();
-
-
-    //var s = (context as SampleDbContext).Schedules.ToList();
-}
 
 
 public partial class Program

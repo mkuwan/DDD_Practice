@@ -9,6 +9,7 @@ namespace SampleConsole.Domain.SampleModel
 {
     public class Schedule : Entity, IAggregateRoot
     {
+        public int ScheduleId => Id;
         public DateTime ScheduleDateTime { get; set; }
         public string? ScheduleContent { get; set; }
 
@@ -19,6 +20,16 @@ namespace SampleConsole.Domain.SampleModel
             ScheduleContent = scheduleContent;
         }
 
+        protected Schedule()
+        {
+
+        }
+
+        public static Schedule NewSchedule()
+        {
+            var schedule = new Schedule();
+            return schedule;
+        }
 
 
         public void SetScheduleDate(DateTime dateTime)

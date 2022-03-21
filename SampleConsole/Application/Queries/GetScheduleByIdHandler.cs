@@ -19,7 +19,7 @@ namespace SampleConsole.Application.Queries
             _repository = repository;
         }
 
-        public async Task<Schedule> Handle(GetScheduleByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Schedule?> Handle(GetScheduleByIdQuery request, CancellationToken cancellationToken)
         {
             return await _repository.GetByIdAsync(request.Id);
         }
