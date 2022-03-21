@@ -14,8 +14,6 @@ using Shared.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 // Add services to the container.
 
 // host

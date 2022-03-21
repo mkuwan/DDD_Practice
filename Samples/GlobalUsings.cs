@@ -14,9 +14,11 @@ global using System.Threading;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Autofac;
+global using Autofac.Extensions.DependencyInjection;
 global using MediatR;
 global using Polly;
 global using Polly.Retry;
-global using Autofac.Extensions.DependencyInjection;
+
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
+global using Serilog;
