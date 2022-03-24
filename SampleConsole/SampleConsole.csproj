@@ -29,11 +29,14 @@
     <PackageReference Include="Autofac" Version="6.3.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Autofac.Extras.Moq" Version="6.1.0" />
-    <PackageReference Include="Azure.Core" Version="1.22.0" />
+    <PackageReference Include="Azure.Core" Version="1.23.0" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
     <PackageReference Include="Azure.Identity" Version="1.5.0" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.7.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.11.0" />
+    <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.4.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Autofac.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
@@ -98,8 +101,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Behaviors\" />
     <Folder Include="Application\Controllers\" />
+    <Folder Include="Application\PipelineBehaviors\" />
   </ItemGroup>
 
   <ItemGroup>

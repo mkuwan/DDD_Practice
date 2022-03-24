@@ -11,7 +11,7 @@
     <PackageReference Include="Autofac" Version="6.3.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Autofac.Extras.Moq" Version="6.1.0" />
-    <PackageReference Include="Azure.Core" Version="1.22.0" />
+    <PackageReference Include="Azure.Core" Version="1.23.0" />
     <PackageReference Include="Azure.Identity" Version="1.5.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Autofac.DependencyInjection" Version="8.0.1" />

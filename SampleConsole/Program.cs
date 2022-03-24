@@ -5,6 +5,7 @@ using Autofac.Extensions.DependencyInjection;
 using Azure.Core;
 using Azure.Identity;
 using Castle.DynamicProxy;
+using FluentValidation;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SampleConsole.Application.Behaviors;
 using SampleConsole.BackgroundTasks;
 using SampleConsole.Domain.Repositories;
 using SampleConsole.Infrastructure;
@@ -30,11 +32,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 // MediatR
-//builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
-//{
-//    containerBuilder.RegisterModule(new MediatorModule());
-//});
 builder.Services.AddMediatR(typeof(Program));
+
+// FluentValidation
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
 // dbContext
 var orderConnectionString = builder.Configuration.GetConnectionString("SampleConnection");
@@ -44,15 +46,10 @@ builder.Services.AddDbContextFactory<SampleDbContext>(options =>
 
 //builder.Services.Configure<FileUploadSettings>(builder.Configuration.GetSection("FileUploadSettings"));
 
-//// DI
+// DI
 builder.Services.AddTransient<IScheduleRepository, ScheduleRepository>();
-//builder.Services.AddTransient<ISettingService, SettingService>();
-//builder.Services.AddTransient<IFileUploadService, FileUploadService>();
-//builder.Services.AddTransient<IStoreService, StoreService>();
-//builder.Services.AddTransient<IImportAddressRepository, ImportAddressRepository>();
 
 builder.Services.AddHostedService<TickerBackgroundService>();
-
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -62,10 +59,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-
 var app = builder.Build();
 
-//Console.WriteLine(app.Environment.EnvironmentName.ToString());
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

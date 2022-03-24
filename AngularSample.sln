@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{019AC711-2088-4683-9818-0EF6F715B390}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsole", "SampleConsole\SampleConsole.csproj", "{83BED430-9B0C-4F2E-9D77-60CEBB5194A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleConsole", "SampleConsole\SampleConsole.csproj", "{83BED430-9B0C-4F2E-9D77-60CEBB5194A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularBackendTests", "AngularBackendTests\AngularBackendTests.csproj", "{AE977A93-7C51-4C17-90EB-B0066450AA93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{83BED430-9B0C-4F2E-9D77-60CEBB5194A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83BED430-9B0C-4F2E-9D77-60CEBB5194A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83BED430-9B0C-4F2E-9D77-60CEBB5194A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE977A93-7C51-4C17-90EB-B0066450AA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE977A93-7C51-4C17-90EB-B0066450AA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE977A93-7C51-4C17-90EB-B0066450AA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE977A93-7C51-4C17-90EB-B0066450AA93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
