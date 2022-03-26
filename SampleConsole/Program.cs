@@ -4,6 +4,7 @@ using System.Net;
 using Autofac.Extensions.DependencyInjection;
 using Azure.Core;
 using Azure.Identity;
+using BenchmarkDotNet.Running;
 using Castle.DynamicProxy;
 using FluentValidation;
 using Microsoft.AspNetCore;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SampleConsole.Application.Behaviors;
 using SampleConsole.BackgroundTasks;
+using SampleConsole.Benchmarks;
 using SampleConsole.Domain.Repositories;
 using SampleConsole.Infrastructure;
 using SampleConsole.Infrastructure.Mediator;
@@ -77,7 +79,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//BenchmarkRunner.Run<DateParserBenchmarks>();
 app.Run();
+
+
 
 // app.Run() ではなくHostを使用するパターン
 // https://andrewlock.net/exploring-dotnet-6-part-2-comparing-webapplicationbuilder-to-the-generic-host/
