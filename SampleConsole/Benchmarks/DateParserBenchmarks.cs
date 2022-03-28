@@ -13,13 +13,13 @@ namespace SampleConsole.Benchmarks
     [RankColumn]
     public class DateParserBenchmarks
     {
-        private const string dateTime = "2022-3-21T16:31:30Z";
-        private static readonly DateParser parser = new DateParser();
+        private const string DateTime = "2022-3-21T16:31:30Z";
+        private static readonly DateParser Parser = new DateParser();
 
         [Benchmark(Baseline = true)]
         public void GetYearFromDateTime()
         {
-            parser.GetYearFromDateTime(dateTime);
+            Parser.GetYearFromDateTime(DateTime);
         }
     }
 }

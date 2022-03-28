@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using SampleConsole.Domain.SampleModel;
 using SampleConsole.Domain.SeedWork;
 using SampleConsole.Infrastructure.EntityConfigurations;
 using SampleConsole.Infrastructure.Mediator;
@@ -20,7 +21,8 @@ namespace SampleConsole.Infrastructure
         private IDbContextTransaction _currentTransaction;
 
 
-        public DbSet<ScheduleTable?> Schedules { get; set; }
+        public DbSet<ScheduleTable> Schedules { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         public SampleDbContext(DbContextOptions<SampleDbContext> options): base(options) { }
 

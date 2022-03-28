@@ -4,8 +4,10 @@ using System.Linq;
 
 using System.Text;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using Moq;
 using Xunit;
+using IContainer = Autofac.IContainer;
 
 
 namespace Samples.DomainEvent
@@ -14,10 +16,10 @@ namespace Samples.DomainEvent
     // https://docs.microsoft.com/ja-jp/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation
     // https://enterprisecraftsmanship.com/posts/domain-events-simple-reliable-solution/
     // https://udidahan.com/2008/08/25/domain-events-take-2/
+    // https://udidahan.com/2009/06/14/domain-events-salvation/
 
     /// <summary>
     /// マーカーインターフェース
-    /// 使わないでと言われるけど...
     /// </summary>
     public interface IDomainEvent { }
 
@@ -40,21 +42,44 @@ namespace Samples.DomainEvent
     /// </summary>
     public static class DomainEvents
     {
-        private static readonly List<Delegate> Handlers = new ();
+        private static List<Delegate>? _actions;
+        
+        public static IContainer Container { get; set; }
 
+        /// <summary>
+        /// Domain Event登録(Subscribe)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="eventHandler"></param>
         public static void Register<T>(Action<T> eventHandler) where T : IDomainEvent
         {
-            Handlers.Add(eventHandler);
+            _actions ??= new List<Delegate>();
+            _actions.Add(eventHandler);
         }
 
-
+        /// <summary>
+        /// Domain Event発行(Publish)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="domainEvent"></param>
         public static void Raise<T>(T domainEvent) where T : IDomainEvent
         {
-            foreach (Delegate handler in Handlers)
+            var handler = Container.Resolve<IHandlers<T>>();
+            handler.Handle(domainEvent);
+
+            foreach (Delegate action in _actions)
             {
-                var action = (Action<T>) handler;
-                action(domainEvent);
+                if (action is Action<T> act)
+                {
+                    //act(domainEvent);
+                    act.Invoke(domainEvent);
+                }
             }
+        }
+
+        public static void ClearEvents()
+        {
+            _actions.Clear();
         }
     }
 
@@ -76,60 +101,81 @@ namespace Samples.DomainEvent
     /// </summary>
     public class Order
     {
-        public string _customer { get; private set; }
-        public List<string> _goodsList { get; private set; }
+        public string Customer { get; private set; }
+        public List<(string, decimal)> GoodsList { get; private set; }
 
+        public decimal Price { get; private set; } = 0;
 
 
         public Order(string customer)
         {
-            _customer = customer;
-            _goodsList = new List<string>();
+            Customer = customer;
+            GoodsList = new List<(string, decimal)>();
         }
 
-        public void AddCart(string item)
+        public void AddCart((string, decimal) item)
         {
-            _goodsList.Add(item);
+            GoodsList.Add(item);
         }
 
         public Order Submitted()
         {
+            // 合計額を計算します
+            GoodsList.ForEach(x => Price += x.Item2);
+            
             DomainEvents.Raise(new OrderSubmittedEvent(this));
             return this;
         }
     }
 
-    public class DomainEventSampleTest
+    /// <summary>
+    /// イベントハンドラー
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IHandlers<T> where T : IDomainEvent
     {
-        private int actualValue = 0;
+        void Handle(T domainEvent);
+    }
+    public class OrderSubmittedHandler : IHandlers<OrderSubmittedEvent>
+    {
+        public decimal Price { get; private set; }
 
-        [Fact]
-        public void ClassicalDomainEventApproachTest()
+        public void Handle(OrderSubmittedEvent args)
         {
-            // Arrange
-            // イベント購読
-            DomainEvents.Register<OrderSubmittedEvent>(eventHandler);
-            Order Cart = new Order("客");
-            var Goods = new List<string>() {"シャンプー", "リンス", "石鹸"};
-            Goods.ForEach(x => Cart.AddCart(x));
-
-
-            // Act
-            Assert.Equal(0, actualValue); //呼び出し前は計算されていないので0
-            Cart.Submitted(); // eventHandlerが呼び出される
-
-            // Assertion
-            Assert.Equal("客", Cart._customer);
-            Assert.Equal(1500, actualValue);
-        }
-
-        private void eventHandler(OrderSubmittedEvent ev)
-        {
-            // to do...
-
-            // ex)
-            actualValue = ev.Order._goodsList.Count * 500;
+            Price = args.Order.Price;
         }
     }
+
+    public class DomainEventSampleTest
+    {
+        [Fact]
+        public void DomainEventHandlerTest()
+        {
+            var handler = new OrderSubmittedHandler();
+            using (var mock = AutoMock.GetLoose(cfg => cfg.RegisterInstance(handler).As<IHandlers<OrderSubmittedEvent>>()))
+            {
+                // Arrange
+                // イベント購読
+                mock.Create<IHandlers<OrderSubmittedEvent>>();
+                DomainEvents.Container = mock.Container;
+
+                var order = new Order("お客さん");
+                DomainEvents.Register<OrderSubmittedEvent>(ev => order = ev.Order);
+                var products = new List<(string, decimal)>() { ("シャンプー", 400), ("リンス", 380), ("石鹸", 210) };
+                products.ForEach(x => order.AddCart(x));
+
+                // Act
+                order.Submitted(); // eventHandlerが呼び出される
+
+                // Assertion
+                Assert.Equal("お客さん", order.Customer);
+                Assert.Equal(990, order.Price);
+
+                Assert.Equal(990, handler.Price);
+            }
+        }
+
+    }
+
 
 }
