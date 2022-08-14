@@ -34,7 +34,7 @@ namespace Repository.Mediator
 
             builder.Register<ServiceFactory>(context =>
             {
-                var componentContext = context.Resolve<IComponentContext>();
+                IComponentContext componentContext = context.Resolve<IComponentContext>();
                 return type =>
                 {
                     object? obj;

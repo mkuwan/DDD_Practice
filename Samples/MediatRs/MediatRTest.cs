@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Samples.MediatRs
 {
-    public class MedatRTest
+    public class MediatRTest
     {
         [Fact]
         public async void MediatRGetModelListTest()

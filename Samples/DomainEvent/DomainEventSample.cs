@@ -132,7 +132,7 @@ namespace Samples.DomainEvent
     /// イベントハンドラー
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IHandlers<T> where T : IDomainEvent
+    public interface IHandlers<in T> where T : IDomainEvent
     {
         void Handle(T domainEvent);
     }
